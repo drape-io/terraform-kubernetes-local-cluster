@@ -25,7 +25,8 @@ Then create a `main.tf` file to create your first cluster:
 
 ```hcl
 module "local-cluster" {
-    source = "../"
+    source  = "drape-io/local-cluster/kubernetes"
+    version = "0.0.4"
     certs_path = "./.certs"
     k8s_config_path = "./kubeconfig"
     k8s_cluster_name = "example-kind-cluster"
@@ -80,7 +81,9 @@ A configuration could look something like this:
 
 ```
 module "local-cluster" {
-  source           = "../"
+  source  = "drape-io/local-cluster/kubernetes"
+  version = "0.0.4"
+
   certs_path       = "./.certs"
   k8s_config_path  = "./kubeconfig-cluster1"
   k8s_cluster_name = "example-kind-cluster"
@@ -90,7 +93,8 @@ module "local-cluster" {
 }
 
 module "best-cluster" {
-  source           = "../"
+  source  = "drape-io/local-cluster/kubernetes"
+  version = "0.0.4"
   certs_path       = "./.certs"
   k8s_config_path  = "./kubeconfig-cluster2"
   k8s_cluster_name = "example-kind-cluster2"
