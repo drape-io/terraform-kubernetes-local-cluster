@@ -1,0 +1,10 @@
+name: "Setup rtx"
+description: "Configures rtx and exposes environment variables"
+runs:
+  using: "composite"
+  steps:
+      - uses: jdx/rtx-action@v1.2.3
+        with: { install: false }
+      - name: Expose current versions as env var 
+        run: rtx current |awk '{ printf "RTX_%s_VERSION=%s\n", toupper($1), $2}' >> $GITHUB_ENV
+        shell: bash
