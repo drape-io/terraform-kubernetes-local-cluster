@@ -1,0 +1,23 @@
+name: pr_build
+
+on:
+  pull_request:
+    paths:
+      - '*'
+      - '*/**'
+      - '!README.md'
+      - '!.gitignore'
+      - '!justfile'
+    
+jobs:
+  terraform-lint: 
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-rtx
+      - uses: earthly/actions-setup@v1
+        with: { version: "v${{ env.RTX_EARTHLY_VERSION }}" }
+      - run: |
+          earthly \
+            +ci-terraform-lint \
+              --TERRAFORM_VERSION=${{ env.RTX_TERRAFORM_VERSION }}
