@@ -1,4 +1,4 @@
 .terraform*
 .certs
-kubeconfig
+kubeconfig*
 *.tfstate*

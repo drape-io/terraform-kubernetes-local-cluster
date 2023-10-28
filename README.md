@@ -69,3 +69,34 @@ https://argocd.local-cluster.dev
 
 HTTPBin:
 https://httpbin.local-cluster.dev
+
+# Multiple Clusters
+If you want to run multiple clusters with this module you'll want the clusters
+to have different CIDR ranges.   To do this you can use the variables
+`cidr_start` and `cidr_end` and make sure they don't conflict.  You will also
+want to make sure you generate different `kubeconfig` paths for each.
+
+A configuration could look something like this:
+
+```
+module "local-cluster" {
+  source           = "../"
+  certs_path       = "./.certs"
+  k8s_config_path  = "./kubeconfig-cluster1"
+  k8s_cluster_name = "example-kind-cluster"
+  base_domain      = "local-cluster.dev"
+  cidr_start       = 200
+  cidr_end         = 205
+}
+
+module "best-cluster" {
+  source           = "../"
+  certs_path       = "./.certs"
+  k8s_config_path  = "./kubeconfig-cluster2"
+  k8s_cluster_name = "example-kind-cluster2"
+  base_domain      = "best-cluster.dev"
+  cidr_start       = 206
+  cidr_end         = 210
+}
+
+```
