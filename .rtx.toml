@@ -1,0 +1,10 @@
+[tools]
+mkcert = "1.4.4"
+terraform = "1.5.2"
+kubectl = "1.27.3"
+helm = "3.12.2"
+kustomize = "4.5.7"
+earthly = "0.7.9"
+
+[plugins]
+earthly = "https://github.com/YR-ZR0/asdf-earthly"
