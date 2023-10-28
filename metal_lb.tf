@@ -82,7 +82,7 @@ metadata:
   namespace: ${local.metal_lb_namespace}
 spec:
   addresses:
-  - ${cidrhost(local.docker_subnet, 200)}-${cidrhost(local.docker_subnet, 250)}
+  - ${cidrhost(local.docker_subnet, var.cidr_start)}-${cidrhost(local.docker_subnet, var.cidr_end)}
 EOF
 
   depends_on = [helm_release.metal_lb]

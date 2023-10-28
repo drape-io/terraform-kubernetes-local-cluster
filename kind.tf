@@ -31,6 +31,9 @@ resource "kind_cluster" "default" {
         EOF
       ]
 
+      /* Port mappings are not necessary because we have an actual LoadBalancer
+      with an external IP.   This is only necessary if you need to expose host
+      ports directly and have them forwarded to the cluster
       extra_port_mappings {
         container_port = 80
         host_port      = 80
@@ -40,6 +43,7 @@ resource "kind_cluster" "default" {
         container_port = 443
         host_port      = 443
       }
+      */
       /* Mount the self-signed cert into the node so it can communicate with
       ingresses */
       extra_mounts {

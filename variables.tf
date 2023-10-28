@@ -73,3 +73,14 @@ variable "enable_httpbin" {
   default     = true
 }
 
+variable "cidr_start" {
+  description = "The start for the CIDR that is used for the loadbalancer"
+  type        = number
+  default     = 200
+}
+
+variable "cidr_end" {
+  description = "The end for the CIDR that is used for the loadbalancer"
+  type        = number
+  default     = 210
+}
