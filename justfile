@@ -1,6 +1,12 @@
 help:
   @just --list
 
+lint:
+    earthly +ci-terraform-lint
+
+format-terraform:
+    terraform fmt -write -recursive .
+
 # Fetch the cert-manager CRDs
 fetch-cert-manager-crds CERT_MANAGER_VERSION="v1.12.4":
     echo "Fetching cert-manager CRDS for {{CERT_MANAGER_VERSION}}"

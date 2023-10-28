@@ -1,3 +1,3 @@
 locals {
-  cert_secret        = "${var.namespace}-https-cert"
+  cert_secret = "${var.namespace}-https-cert"
 }
