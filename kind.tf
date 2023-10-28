@@ -1,6 +1,6 @@
 locals {
   containerd_config_path = "/etc/containerd/certs.d/"
-  root_cert_path         = "${var.certs_path}/.certs/rootCA.pem"
+  root_cert_path         = "${var.certs_path}/rootCA.pem"
 }
 
 resource "kind_cluster" "default" {
