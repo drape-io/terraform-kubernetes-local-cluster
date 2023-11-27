@@ -102,5 +102,33 @@ module "best-cluster" {
   cidr_start       = 206
   cidr_end         = 210
 }
-
 ```
+
+# Namespaces
+If you want to provision some additional namespaces to make sure they are
+ready to be used by helm/kustomize/etc you can pass `namespaces` variable as a
+list.
+
+```hcl
+namespaces = [
+  "foo",
+  "bar",
+]
+```
+
+# TLS certs
+If you want additonal certificates generated you can provide a map of namespaces
+and a list of domains you want generated for them with `additional_certs`
+variable:
+
+```hcl
+additional_certs = {
+  "foo": [
+    "foo.dev"
+  ],
+  "bar": [
+    "bar.dev"
+  ]
+}
+```
+

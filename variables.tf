@@ -84,3 +84,15 @@ variable "cidr_end" {
   type        = number
   default     = 210
 }
+
+variable "namespaces" {
+  description = "The additional namespaces you want created"
+  type        = list(string)
+  default     = []
+}
+
+variable "additional_certs" {
+  description = "The additional TLS certs you want created. Key is namespace, value is a list of DNS names"
+  type        = map(list(string))
+  default     = {}
+}
