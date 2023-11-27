@@ -77,3 +77,16 @@ resource "kind_cluster" "default" {
     }
   }
 }
+
+resource "kubectl_manifest" "additional_namespaces" {
+  for_each  = toset(var.namespaces)
+  yaml_body = <<YAML
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${each.value}
+YAML
+  depends_on = [
+    kind_cluster.default,
+  ]
+}
