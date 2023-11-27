@@ -118,9 +118,17 @@ namespaces = [
 
 # TLS certs
 If you want additonal certificates generated you can provide a map of namespaces
-and a list of domains you want generated for them with `additional_dns_names`
+and a list of domains you want generated for them with `additional_certs`
 variable:
 
-```
+```hcl
+additional_certs = {
+  "foo": [
+    "foo.dev"
+  ],
+  "bar": [
+    "bar.dev"
+  ]
+}
 ```
 
