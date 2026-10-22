@@ -2,10 +2,6 @@ locals {
   metal_lb_namespace = "metallb"
 }
 
-data "kubectl_path_documents" "metallb_crd" {
-  pattern = "${path.module}/kubernetes/metal_lb_crds/*.yml"
-}
-
 data "docker_network" "kind_network" {
   name = "kind"
 
@@ -18,50 +14,28 @@ output "subnet" {
   value = local.docker_subnet
 }
 
-resource "kubectl_manifest" "metallb_crd" {
-  for_each = data.kubectl_path_documents.metallb_crd.manifests
-
-  yaml_body         = each.value
-  server_side_apply = true
-
-  depends_on = [
-    kind_cluster.default,
-    helm_release.cilium,
-  ]
-
-  ignore_fields = [
-    "spec.conversion.webhook.clientConfig.caBundle",
-  ]
-}
-
 // https://github.com/metallb/metallb/tree/main/charts/metallb
 resource "helm_release" "metal_lb" {
   name             = "metallb"
   repository       = "https://metallb.github.io/metallb"
   chart            = "metallb"
-  version          = "0.13.10"
+  version          = "0.16.1"
   namespace        = local.metal_lb_namespace
   create_namespace = true
 
-  set {
-    name  = "controller.image.pullPolicy"
-    value = "IfNotPresent"
-  }
-
-  set {
-    name  = "speaker.image.pullPolicy"
-    value = "IfNotPresent"
-  }
-
-  set {
-    name  = "crds.enabled"
-    value = "false"
-  }
+  values = [<<YAML
+crds:
+  enabled: true
+# We only use L2 mode. frr-k8s (BGP) adds a pod per node and readily exhausts
+# inotify limits on small Docker VMs.
+frrk8s:
+  enabled: false
+YAML
+  ]
 
   depends_on = [
     kind_cluster.default,
     helm_release.cilium,
-    kubectl_manifest.contour_crd
   ]
 }
 

@@ -1,0 +1,8 @@
+[tools]
+terraform = "1.17.0"
+kubectl = "1.37.1"
+helm = "4.3.1"
+kind = "0.33.0"
+mkcert = "1.4.4"
+kustomize = "5.8.3"
+just = "1.59.0"

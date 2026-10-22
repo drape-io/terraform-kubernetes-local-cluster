@@ -1,35 +1,17 @@
-data "kubectl_path_documents" "argo_crd" {
-  pattern = "${path.module}/kubernetes/argocd_crds/*.yml"
-}
-
-resource "kubectl_manifest" "argo_crd" {
-  for_each          = data.kubectl_path_documents.argo_crd.manifests
-  yaml_body         = each.value
-  server_side_apply = true
-
-  depends_on = [
-    kind_cluster.default,
-    helm_release.cilium,
-  ]
-}
-
 # https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
 resource "helm_release" "argocd" {
   name             = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
-  version          = "5.45.0"
+  version          = "10.10.5"
   namespace        = var.argocd_namespace
   create_namespace = true
-
-  set {
-    name  = "crds.install"
-    value = "false"
-  }
 
   # Supply static credentials & API token values for development.
   # username: admin / password: admin123
   values = [<<YAML
+crds:
+  install: true
 configs:
   cm:
     "accounts.kind_cluster": "apiKey,login"
@@ -52,7 +34,6 @@ YAML
   depends_on = [
     kind_cluster.default,
     helm_release.cilium,
-    kubectl_manifest.argo_crd,
   ]
 }
 
@@ -68,7 +49,6 @@ module "argo_tls" {
     kind_cluster.default,
     helm_release.argocd,
     helm_release.cert_manager,
-    kubectl_manifest.argo_crd,
   ]
 }
 
@@ -97,7 +77,6 @@ YAML
     helm_release.argocd,
     helm_release.contour,
     helm_release.cert_manager,
-    kubectl_manifest.argo_crd,
     module.argo_tls,
   ]
 }

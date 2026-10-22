@@ -1,14 +1,16 @@
 terraform {
+  required_version = ">= 1.6"
+
   required_providers {
     kind = {
       # https://registry.terraform.io/providers/tehcyx/kind/latest/docs
       source  = "tehcyx/kind"
-      version = "~> 0.2.1"
+      version = "~> 0.13"
     }
 
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 2.22"
+      version = "~> 4.6"
     }
 
     kubectl = {
@@ -16,12 +18,12 @@ terraform {
       # fork fixes it.   Critical issues:
       # https://github.com/gavinbunney/terraform-provider-kubectl/issues/270
       source  = "alekc/kubectl"
-      version = ">= 2.0.2"
+      version = "~> 2.4"
     }
 
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.11.0"
+      version = "~> 3.3"
     }
   }
 }
