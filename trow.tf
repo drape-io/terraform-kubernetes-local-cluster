@@ -1,11 +1,19 @@
-# https://github.com/ContainerSolutions/trow/blob/main/docs/HELM_INSTALL.md
+# https://github.com/trow-registry/trow/blob/main/docs/HELM_INSTALL.md
 resource "helm_release" "trow" {
   name             = "trow"
-  repository       = "https://trow.io"
+  repository       = "oci://ghcr.io/trow-registry/charts"
   chart            = "trow"
-  version          = "0.3.5"
+  version          = "0.13.0"
   namespace        = var.trow_namespace
   create_namespace = true
+
+  values = [<<YAML
+trow:
+  domain: trow.${var.base_domain}
+service:
+  type: ClusterIP
+YAML
+  ]
 
   depends_on = [
     kind_cluster.default,

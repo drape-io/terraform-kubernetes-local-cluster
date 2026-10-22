@@ -1,6 +1,7 @@
 locals {
-  containerd_config_path = "/etc/containerd/certs.d/"
-  root_cert_path         = "${var.certs_path}/rootCA.pem"
+  containerd_config_path = "/etc/containerd/certs.d"
+  # kind resolves relative mount paths against its own working directory.
+  root_cert_path = abspath("${var.certs_path}/rootCA.pem")
 }
 
 resource "kind_cluster" "default" {
@@ -12,9 +13,11 @@ resource "kind_cluster" "default" {
   kind_config {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
+    # containerd 2.x plugin ID; makes containerd read the per-registry CA we
+    # mount under certs.d below.
     containerd_config_patches = [
       <<-TOML
-        [plugins."io.containerd.grpc.v1.cri".registry]
+        [plugins."io.containerd.cri.v1.images".registry]
           config_path = "${local.containerd_config_path}"
       TOML
     ]
@@ -22,14 +25,9 @@ resource "kind_cluster" "default" {
     node {
       role = "control-plane"
 
-      kubeadm_config_patches = [
-        <<-EOF
-        kind: InitConfiguration
-        nodeRegistration:
-        kubeletExtraArgs:
-            node-labels: "ingress-ready=true"
-        EOF
-      ]
+      labels = {
+        "ingress-ready" = "true"
+      }
 
       /* Port mappings are not necessary because we have an actual LoadBalancer
       with an external IP.   This is only necessary if you need to expose host
@@ -44,31 +42,22 @@ resource "kind_cluster" "default" {
         host_port      = 443
       }
       */
-      /* Mount the self-signed cert into the node so it can communicate with
-      ingresses */
+      /* Mount the self-signed cert into the node so containerd trusts the
+      trow registry. */
       extra_mounts {
         host_path      = local.root_cert_path
         container_path = "${local.containerd_config_path}/trow.${var.base_domain}/ca.crt"
       }
     }
 
-    node {
-      role = "worker"
-      /* Mount the self-signed cert into the node so it can communicate with
-      ingresses */
-      extra_mounts {
-        host_path      = local.root_cert_path
-        container_path = "${local.containerd_config_path}/trow.${var.base_domain}/ca.crt"
-      }
-    }
-
-    node {
-      role = "worker"
-      /* Mount the self-signed cert into the node so it can communicate with
-      ingresses */
-      extra_mounts {
-        host_path      = local.root_cert_path
-        container_path = "${local.containerd_config_path}/trow.${var.base_domain}/ca.crt"
+    dynamic "node" {
+      for_each = range(var.worker_count)
+      content {
+        role = "worker"
+        extra_mounts {
+          host_path      = local.root_cert_path
+          container_path = "${local.containerd_config_path}/trow.${var.base_domain}/ca.crt"
+        }
       }
     }
 

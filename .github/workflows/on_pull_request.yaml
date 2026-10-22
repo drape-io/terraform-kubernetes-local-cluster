@@ -2,38 +2,18 @@ name: pr_build
 
 on:
   pull_request:
-    
+
+permissions:
+  contents: read
+
 jobs:
-  terraform-lint: 
-    runs-on: ubuntu-22.04
+  terraform-lint:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Check if real files changed
-        id: changed-files-yaml
-        uses: tj-actions/changed-files@v40
+      - uses: actions/checkout@v7
+
+      - uses: jdx/mise-action@v5
         with:
-          files_yaml: |
-            src:
-              - '*'
-              - '*/**'
-              - '!README.md'
-              - '!.gitignore'
-              - '!justfile'
+          install_args: terraform just
 
-      - uses: ./.github/actions/setup-rtx
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-
-      - uses: earthly/actions-setup@v1
-        with: { version: "v${{ env.RTX_EARTHLY_VERSION }}" }
-        if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-
-      - if: steps.changed-files-yaml.outputs.src_any_changed == 'true'
-        run: |
-          earthly \
-            +ci-terraform-lint \
-              --TERRAFORM_VERSION=${{ env.RTX_TERRAFORM_VERSION }}
-
-      - if: steps.changed-files-yaml.outputs.src_any_changed == 'false'
-        run: |
-          echo "No terraform files changed"
-
+      - run: just lint

@@ -7,36 +7,25 @@ resource "helm_release" "cilium" {
   name             = "cilium"
   repository       = "https://helm.cilium.io/"
   chart            = "cilium"
-  version          = "1.14.1"
+  version          = "1.20.3"
   namespace        = var.cilium_namespace
   create_namespace = true
 
-  set {
-    name  = "image.pullPolicy"
-    value = "IfNotPresent"
-  }
+  values = [<<YAML
+image:
+  pullPolicy: IfNotPresent
+ipam:
+  mode: kubernetes
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+YAML
+  ]
 
-  set {
-    name  = "ipam.mode"
-    value = "kubernetes"
-  }
-
-  set {
-    name  = "hubble.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "hubble.ui.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "hubble.relay.enabled"
-    value = "true"
-  }
-  # Make sure `kind` has written the `kubeconfig` before we move forward
-  # with installing helm.
+  # The helm provider can't connect until the cluster exists.
   depends_on = [kind_cluster.default]
 }
 

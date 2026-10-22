@@ -1,11 +1,22 @@
 variable "k8s_version" {
-  description = "The version of kubernetes we'll make with kinds"
+  description = "The kindest/node image tag to use. The image must ship containerd 2 (images built for kind >= 0.27)."
   type        = string
-  default     = "v1.27.3"
+  default     = "v1.37.0"
+}
+
+variable "worker_count" {
+  description = "Number of kind worker nodes to create alongside the control plane"
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.worker_count >= 0 && floor(var.worker_count) == var.worker_count
+    error_message = "worker_count must be a non-negative whole number."
+  }
 }
 
 variable "k8s_config_path" {
-  description = "The location to put $KUBECONFIG."
+  description = "Where to write the new cluster's kubeconfig. Use a dedicated file; don't point this at a kubeconfig you use for other clusters."
   type        = string
 }
 

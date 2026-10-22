@@ -5,7 +5,7 @@ terraform {
       # fork fixes it.   Critical issues:
       # https://github.com/gavinbunney/terraform-provider-kubectl/issues/270
       source  = "alekc/kubectl"
-      version = ">= 2.0.2"
+      version = "~> 2.4"
     }
   }
 }

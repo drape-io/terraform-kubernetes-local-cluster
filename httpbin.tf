@@ -35,7 +35,6 @@ YAML
   depends_on = [
     kind_cluster.default,
     helm_release.cert_manager,
-    kubectl_manifest.argo_crd,
     module.httpbin_tls,
   ]
 }
@@ -98,6 +97,7 @@ YAML
   depends_on = [
     kind_cluster.default,
     helm_release.cert_manager,
+    helm_release.contour,
     kubectl_manifest.httpbin_deployment,
     module.httpbin_tls,
   ]
